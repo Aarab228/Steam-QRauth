@@ -16,7 +16,7 @@ def run_node_server():
             process = subprocess.Popen(["server.exe"])
             return process
         else:
-            subprocess.run(["node", "server.js"], check=True)
+            subprocess.Popen(["node", "server.js"])
     except subprocess.CalledProcessError as e:
         print("Ошибка при запуске сервера:", e)
         sys.exit(1)

@@ -76,10 +76,15 @@ After creating **server.exe** execute:
 pyinstaller --onefile --add-data “server.exe;.” client.py
 ```
 
-**REMEMBER! The ``server.exe`` and `client.exe`` file must ALWAYS be in the same place!
+**REMEMBER! The `server.exe` and `client.exe` file must ALWAYS be in the same place!**
 
 Run your created `client.exe`. You can run just the .exe, or you can run it using the command line:
 
+
+---
+---
+---
+---
 
 
 # RU

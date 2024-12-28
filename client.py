@@ -5,6 +5,7 @@ import json
 import subprocess
 import sys
 import os
+import atexit
 
 API_URL = "http://localhost:3000"
 TIMEOUT = 120
@@ -13,13 +14,19 @@ def run_node_server():
     """ Запуск Node.js сервера. """
     try:
         if sys.platform == 'win32' and os.path.exists('server.exe'):
-            process = subprocess.Popen(["server.exe"])
-            return process
+            process = subprocess.Popen(["server.exe"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
-            subprocess.Popen(["node", "server.js"])
+            process = subprocess.Popen(["node", "server.js"], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except subprocess.CalledProcessError as e:
         print("Ошибка при запуске сервера:", e)
         sys.exit(1)
+
+    def terminate_server():
+        process.terminate()
+    
+    atexit.register(terminate_server)
+    
+    return process
 
 def generate_qr_code(data):
     """ Генерация QR-кода. """

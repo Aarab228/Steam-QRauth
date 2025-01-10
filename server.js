@@ -98,6 +98,29 @@ app.get("/update-session/:refreshToken", async (req, res) => {
 });
 
 
+app.get("/update-session-refresh/:refreshToken", async (req, res) => {
+    const { refreshToken } = req.params;
+
+    if (!refreshToken) {
+        return res.status(404).json({ error: "Refresh token is not specified." });
+    }
+
+    try {
+        let session = new LoginSession(EAuthTokenPlatformType.SteamClient);
+        session.refreshToken = refreshToken;
+        let renewed = await session.renewRefreshToken();
+
+        res.json({
+            refreshToken: session.refreshToken,
+            accessToken: session.accessToken,
+        });
+    }
+    catch (err) {
+        res.status(500).json({ error: "Failed to renew refreshToken with error: ${err.message"});
+    }
+})
+
+
 app.post("/create-cookies", async (req, res) => {
     const { sessionID } = req.body; // get sessionID from the request body
 

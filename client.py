@@ -157,6 +157,13 @@ class ServerAPIClient:
         data = response.json()
         return data.get('accessToken', None)
 
+    def update_refresh_token(self, refreshToken):
+        """ Updating the refresh token and return the new access and refresh Tokens. """
+        response = requests.get(f"{API_URL}/update-session-refresh/{refreshToken}")
+        
+        data = response.json()
+        return data.get('refreshToken', None), data.get('accessToken', None)
+
     def clear_console(self):
         os.system("cls" if os.name == "nt" else "clear")
 

@@ -8,18 +8,18 @@ app.use(express.json());
 let sessions = {};
 
 app.post('/start-login', async (req, res) => {
-    const session = new LoginSession(EAuthTokenPlatformType.MobileApp);
-    session.loginTimeout = 120000; // 2 минуты
+    const session = new LoginSession(EAuthTokenPlatformType.SteamClient);
+    session.loginTimeout = 120000; // 2 min
 
     try {
         const startResult = await session.startWithQR();
 
-        // Генерируем уникальный sessionID
+        // Generate a unique sessionID
         const sessionId = uuidv4();
         sessions[sessionId] = {
             session,
             authenticated: false,
-            tokens: null, // Здесь хранится токен после аутентификации
+            tokens: null, // This is where the token is stored after authentication
             qrChallengeUrl: startResult.qrChallengeUrl,
         };
 
@@ -29,13 +29,13 @@ app.post('/start-login', async (req, res) => {
         });
 
         session.on('remoteInteraction', () => {
-            console.log(`Сессия ${sessionId}: QR-код отсканирован.`);
+            console.log(`Session ${sessionId}: QR code scanned.`);
         });
 
         session.on('authenticated', async () => {
-            console.log(`Сессия ${sessionId}: Успешная аутентификация!`);
+            console.log(`Session ${sessionId}: Successful authentication!`);
             
-            // Сохраняем данные токенов и аккаунта
+            // Save token and account data
             sessions[sessionId].authenticated = true;
             sessions[sessionId].tokens = {
                 steamID: session.steamID.toString(),
@@ -46,17 +46,17 @@ app.post('/start-login', async (req, res) => {
         });
 
         session.on('timeout', async () => {
-            console.log(`Сессия ${sessionId}: Таймаут.`);
+            console.log(`Session ${sessionId}: timeout.`);
             session.removeAllListeners();
             delete sessions[sessionId];
         });
 
         session.on('error', (err) => {
-            console.error(`Сессия ${sessionId}: Ошибка - ${err.message}`);
+            console.error(`Session ${sessionId}: Error - ${err.message}`);
             delete sessions[sessionId];
         });
     } catch (err) {
-        console.error('Ошибка инициализации логина:', err.message);
+        console.error('Login initialization error:', err.message);
         res.status(500).json({ error: err.message });
     }
 });
@@ -66,34 +66,56 @@ app.get('/session-status/:sessionID', (req, res) => {
     const sessionData = sessions[sessionID];
 
     if (!sessionData) {
-        return res.status(404).json({ error: 'Сессия не найдена или истекла.' });
+        return res.status(404).json({ error: 'Session not found or expired.' });
     }
 
     res.json({
         authenticated: sessionData.authenticated,
-        tokens: sessionData.tokens, // Возвращаем токены, если сессия аутентифицирована
+        tokens: sessionData.tokens, // Return tokens if the session is authenticated
     });
 });
 
 
+app.get("/update-session/:refreshToken", async (req, res) => {
+    const { refreshToken } = req.params;
+
+    if (!refreshToken) {
+        return res.status(404).json({ error: "Refresh token is not specified." });
+    }
+
+    try {
+        let session = new LoginSession(EAuthTokenPlatformType.SteamClient);
+        session.refreshToken = refreshToken;
+        await session.refreshAccessToken();
+
+        res.json({
+            accessToken: session.accessToken
+        });
+    }
+    catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+
 app.post("/create-cookies", async (req, res) => {
-    const { sessionID } = req.body; // получаем sessionID из тела запроса
+    const { sessionID } = req.body; // get sessionID from the request body
 
     if (!sessionID || !sessions[sessionID]) {
-        return res.status(404).json({ error: "Сессия не найдена или истекла" });
+        return res.status(404).json({ error: "Session not found or expired." });
     }
 
     const sessionData = sessions[sessionID];
 
     if (!sessionData.authenticated) {
-        return res.status(403).json({ error: "Сессия не авторизована" });
+        return res.status(403).json({ error: "Session not authorized." });
     }
 
     try {
         const cookies = await sessionData.session.getWebCookies();
         res.json({ cookies });
     } catch (err) {
-        console.error("Ошибка создания cookies для сессии ${sessionID: ${err.message");
+        console.error("Error creating session cookies ${sessionID: ${err.message");
         res.status(500).json({ error: err.message });
     }
 });

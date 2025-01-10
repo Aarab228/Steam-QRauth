@@ -4,6 +4,13 @@
 - [ENG](#ENG)
 
 
+UPDATE 1.1.
+
+- Created 2 classes for more convenient server management.
+- Added method to update accessToken with refreshToken
+- Added method to get all authorization data as dict for easy use
+- Removed recursive authorization method
+
 
 # ENG
 A simple library for creating QR code for authorization in Steam in Python. When authorizing, you get the following parameters:

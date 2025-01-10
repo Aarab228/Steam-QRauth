@@ -6,6 +6,7 @@ UPDATE 1.1.
 - Added method to update accessToken with refreshToken
 - Added method to get all authorization data as dict for easy use
 - Removed recursive authorization method
+- Added a method to reissue refreshToken by refreshToken. Whether a new refresh token is released depends on the Steam backend. Regardless of the value returned, the accessToken property is always updated with a fresh access token (unless an error has occurred). Important: If the refresh token is successfully updated (e.g., the method returns true), the old refresh token will become invalid, even if it has not yet expired.
 
 
 # ENG

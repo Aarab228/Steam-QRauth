@@ -48,12 +48,6 @@ npm install express steam-session pkg uuid
 pip install -r requirements.txt
 ```
 
-Start the client:
-
-```python
-py client.py
-```
-
 It will automatically start the server as a background process and show the QR for authorization. All data will be displayed on the screen and cookies will be stored in the cookies.json file.
 
 If for some reason you didn't manage to authorize within 2 minutes, QR will automatically generate a new one.

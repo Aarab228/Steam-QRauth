@@ -178,17 +178,3 @@ class ServerAPIClient:
                     "accessToken": tokens['accessToken'],
                     "refreshToken": tokens['refreshToken']
                 }
-
-
-if __name__ == "__main__":
-    runner = ServerRunner()
-    server_process = runner.run_node_server()
-
-    client = ServerAPIClient()
-
-    try:
-        auth = client.get_auth_credentials()
-    except Exception as e:
-        print(f"Error: {e}")
-    finally:
-        runner.stop_server()

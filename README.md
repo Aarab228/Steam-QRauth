@@ -1,5 +1,7 @@
 # Steam QRauth
 
+[Topic on lolz](https://lolz.live/threads/8135681/)
+
 UPDATE 1.1.
 
 - Created 2 classes for more convenient server management.

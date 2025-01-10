@@ -86,3 +86,24 @@ Run your created `client.exe`. You can run just the .exe, or you can run it usin
 ```cmd
 client.exe
 ```
+
+# A simple example of how to use it in your code
+
+```python
+# -*- coding=utf-8 -*-
+
+from client import ServerAPIClient, ServerRunner
+
+def main():
+    runner = ServerRunner()
+    server_process = runner.run_node_server()
+
+    client = ServerAPIClient()
+
+    try:
+        auth = client.get_auth_credentials()
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        runner.stop_server()
+```
